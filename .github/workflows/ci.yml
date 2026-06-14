@@ -1,0 +1,30 @@
+name: Backend CI Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore TravelPlanner.Api.sln
+
+      - name: Build
+        run: dotnet build TravelPlanner.Api.sln --no-restore -c Release
+
+      - name: Test
+        run: dotnet test TravelPlanner.Api.sln --no-build -c Release
