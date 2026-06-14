@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="TravelPlaner.Api/TravelPlaner.Api.csproj" />
+  <Project Path="TravelPlanner.Tests/TravelPlanner.Tests.csproj" />
+</Solution>
