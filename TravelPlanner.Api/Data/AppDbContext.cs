@@ -1,4 +1,4 @@
-﻿ namespace TravelPlaner.Api.Data
+﻿ namespace TravelPlanner.Api.Data
 {
     public class AppDbContext
     {
