@@ -1,4 +1,4 @@
-﻿namespace TravelPlaner.Api.Controllers
+﻿namespace TravelPlanner.Api.Controllers
 {
     public class TravelController
     {
