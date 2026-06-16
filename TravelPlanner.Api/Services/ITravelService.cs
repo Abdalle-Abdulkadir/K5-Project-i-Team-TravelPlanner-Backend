@@ -1,10 +1,6 @@
-﻿using TravelPlanner.Api.Models;
-
-namespace TravelPlanner.Api.Services
+﻿namespace TravelPlaner.Api.Services
 {
     public interface ITravelService
     {
-        Task<TravelResponse> CreateTravelPlanAsync(TravelRequest request);
     }
 }
-

@@ -1,11 +1,6 @@
-﻿using TravelPlanner.Api.Models;
-
-
-namespace TravelPlanner.Api.Services
+﻿namespace TravelPlaner.Api.Services
 {
     public interface IGrokAIService
     {
-        Task<TravelResponse> GenerateTravelPlanAsync(TravelRequest request);
     }
 }
-               

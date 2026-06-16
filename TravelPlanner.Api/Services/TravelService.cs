@@ -1,14 +1,6 @@
-﻿using TravelPlanner.Api.Models;
-
-
-namespace TravelPlanner.Api.Services
+﻿namespace TravelPlaner.Api.Services
 {
-    public class TravelService : ITravelService
+    public class TravelService
     {
-        public Task<TravelResponse> CreateTravelPlanAsync(TravelRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

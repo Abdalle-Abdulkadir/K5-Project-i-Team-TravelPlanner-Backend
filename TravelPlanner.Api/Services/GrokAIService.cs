@@ -1,21 +1,6 @@
-﻿using TravelPlanner.Api.Models;
-using Microsoft.Extensions.Configuration;
-
-
-namespace TravelPlanner.Api.Services
+﻿namespace TravelPlaner.Api.Services
 {
-    public class GrokAIService : IGrokAIService
+    public class GrokAIService
     {
-        private readonly HttpClient _httpClient;
-        private readonly IConfiguration _configuration;
-        public GrokAIService(HttpClient httpClient, IConfiguration configuration)
-        {
-            _httpClient = httpClient;
-            _configuration = configuration;
-        }
-        public Task<TravelResponse> GenerateTravelPlanAsync(TravelRequest request)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
