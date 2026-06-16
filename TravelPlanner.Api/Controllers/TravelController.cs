@@ -1,22 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using TravelPlaner.Api.Models;
+using TravelPlanner.Api.Models; 
 
-namespace TravelPlaner.Api.Controllers
+namespace TravelPlanner.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class TravelController : ControllerBase
     {
-        // 1. Health Check Endpoint
         [HttpGet("health")]
         public IActionResult HealthCheck()
         {
             return Ok(new { status = "Healthy", timestamp = DateTime.UtcNow });
         }
 
-        // 2. Endpoint for destinations suggestions based on budget
         [HttpPost("destinations")]
         public ActionResult<TravelResponse> GetDestinations([FromBody] TravelRequest request)
         {
@@ -31,13 +29,12 @@ namespace TravelPlaner.Api.Controllers
                 Destinations = new List<string> { "Barcelona, Spain", "Rome, Italy", "Prague, Czech Republic" },
                 EstimatedCost = request.Budget * 0.8m,
                 QualityNotes = "Based on current seasonal data. Prices may vary depending on airlines.",
-                TraceId = Guid.NewGuid().ToString() // For Observability (VG requirement)
+                TraceId = Guid.NewGuid().ToString()
             };
 
             return Ok(response);
         }
 
-        // 3. Endpoint for generating a detailed travel itinerary
         [HttpPost("generate-plan")]
         public ActionResult<TravelResponse> GenerateTravelPlan([FromBody] TravelRequest request)
         {

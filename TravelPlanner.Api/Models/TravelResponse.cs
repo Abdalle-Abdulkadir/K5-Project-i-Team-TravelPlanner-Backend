@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TravelPlaner.Api.Models
+namespace TravelPlanner.Api.Models
 {
     public class TravelResponse
     {
