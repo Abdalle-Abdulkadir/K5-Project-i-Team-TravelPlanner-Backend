@@ -1,21 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace TravelPlanner.Api.Models
+namespace TravelPlanner.Api.Models;
+
+public partial class TravelResponse
 {
-    public class TravelResponse
-    {
-        public string Summary { get; set; } = string.Empty;
-        public List<string> Destinations { get; set; } = new();
-        public string? SelectedDestination { get; set; }
-        public decimal EstimatedCost { get; set; }
-        public List<DailyPlan> TravelPlan { get; set; } = new();
-        public string QualityNotes { get; set; } = string.Empty;
-        public string TraceId { get; set; } = string.Empty;
-    }
+    public int Id { get; set; }
 
-    public class DailyPlan
-    {
-        public int Day { get; set; }
-        public List<string> Activities { get; set; } = new();
-    }
+    public int TravelRequestId { get; set; }
+
+    public string Summary { get; set; } = null!;
+
+    public string? SelectedDestination { get; set; }
+
+    public decimal EstimatedCost { get; set; }
+
+    public string TravelPlanText { get; set; } = null!;
+
+    public string QualityNotes { get; set; } = null!;
+
+    public string TraceId { get; set; } = null!;
+
+    public virtual TravelRequest TravelRequest { get; set; } = null!;
 }

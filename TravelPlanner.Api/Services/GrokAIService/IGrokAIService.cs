@@ -1,7 +1,7 @@
 ﻿using TravelPlanner.Api.Models;
 
 
-namespace TravelPlanner.Api.Services
+namespace TravelPlanner.Api.Services.GrokAIService
 {
     public interface IGrokAIService
     {

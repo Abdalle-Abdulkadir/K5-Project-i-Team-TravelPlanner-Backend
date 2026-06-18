@@ -1,5 +1,8 @@
 using Scalar.AspNetCore;
-using TravelPlanner.Api.Services;
+using TravelPlanner.Api.Data;
+using Microsoft.EntityFrameworkCore;
+using TravelPlanner.Api.Services.GrokAIService;
+using TravelPlanner.Api.Services.TravelService;
 
 
 
@@ -12,6 +15,11 @@ builder.Services.AddControllers();
 
 //Add OpenAPI support for Scalar
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddScoped<ITravelService, TravelService>();
 builder.Services.AddScoped<IGrokAIService, GrokAIService>();
