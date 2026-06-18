@@ -1,6 +1,7 @@
 ﻿using TravelPlanner.Api.Data;
 using TravelPlanner.Api.DTOs.Requests;
 using TravelPlanner.Api.DTOs.Responses;
+using TravelPlanner.Api.Models;
 using TravelPlanner.Api.Services.GrokAIService;
 
 namespace TravelPlanner.Api.Services.TravelService
@@ -16,36 +17,50 @@ namespace TravelPlanner.Api.Services.TravelService
             _grokAIService = grokAIService;
         }
 
-        // This method currently returns mock destination suggestions based on the user's budget and trip length.
         public async Task<DestinationResponseDto> GetDestinationsAsync(DestinationRequestDto request)
         {
-            var response = new DestinationResponseDto
+            // Save the user's original search request
+            var travelRequest = new TravelRequest
             {
-                Summary = $"Based on your budget of {request.Budget} SEK for {request.Days} day(s), here are some destination suggestions.",
-                Destinations = new List<string> { "Prague", "Lisbon", "Oslo" },
-                QualityNotes = "These are AI-style mock suggestions. Real AI integration will replace this later.",
-                TraceId = Guid.NewGuid().ToString()
+                Budget = request.Budget!.Value,
+                Days = request.Days!.Value,
+                DepartureDate = request.DepartureDate!.Value,
+                FromLocation = "Stockholm"
             };
 
-            return await Task.FromResult(response);
+            //_context.TravelRequests.Add(travelRequest);
+            //await _context.SaveChangesAsync();
+
+            // Ask Grok AI for destination suggestions
+            var response = await _grokAIService.GetDestinationsAsync(request);
+
+            // Send back the saved request id inside TraceId for now
+            response.TraceId = travelRequest.Id.ToString();
+
+            return response;
         }
 
-
-        // This method currently returns a mock travel plan for the selected destination. It simulates what an AI-generated travel plan might look like.
         public async Task<TravelPlanResponseDto> CreateTravelPlanAsync(TravelPlanRequestDto request)
         {
-            var response = new TravelPlanResponseDto
+            // Ask Grok AI to create the full travel plan
+            var response = await _grokAIService.CreateTravelPlanAsync(request);
+
+            // Save selected destination and generated travel plan
+            var travelResponse = new TravelResponse
             {
-                SelectedDestination = request.Destination,
-                Summary = $"Your travel plan for {request.Destination} is ready.",
-                EstimatedCost = 0,
-                TravelPlanText = $"Day 1: Explore the city center in {request.Destination}. Day 2: Visit local attractions and try local food.",
-                QualityNotes = "This is a mock travel plan. Real AI integration will replace this later.",
-                TraceId = Guid.NewGuid().ToString()
+                TravelRequestId = request.TravelRequestId,
+                SelectedDestination = response.SelectedDestination,
+                EstimatedCost = response.EstimatedCost,
+                TravelPlanText = string.Join("\n", response.TravelPlanText),
+                QualityNotes = string.Join("\n", response.QualityNotes),
+                Summary = response.Summary,
+                TraceId = response.TraceId
             };
 
-            return await Task.FromResult(response);
+            //_context.TravelResponses.Add(travelResponse);
+            //await _context.SaveChangesAsync();
 
+            return response;
         }
     }
 }
