@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 
 
-namespace TravelPlanner.Api.Services
+namespace TravelPlanner.Api.Services.GrokAIService
 {
     public class GrokAIService : IGrokAIService
     {
@@ -15,7 +15,11 @@ namespace TravelPlanner.Api.Services
         }
         public Task<TravelResponse> GenerateTravelPlanAsync(TravelRequest request)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new TravelResponse
+            {
+                Summary = "Mock AI response",
+                TraceId = Guid.NewGuid().ToString(),
+            });
         }
     }
 }
