@@ -1,18 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace TravelPlanner.Api.DTOs.Requests;
-
-public class DestinationRequestDto
+namespace TravelPlanner.Api.DTOs.Requests
 {
-    [Required]
-    [Range(1000, double.MaxValue, ErrorMessage = "Budget must be at least 1000 SEK.")]
-    public decimal? Budget { get; set; }
+    public class DestinationRequestDto
+    {
+        [Required(ErrorMessage = "Budget is required.")]
+        [Range(1, double.MaxValue, ErrorMessage = "Budget must be a positive number greater than 0.")]
+        public decimal Budget { get; set; }
 
-    [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "Trip must be at least 1 day.")]
-    public int? Days { get; set; }
+        [Required(ErrorMessage = "Number of days is required.")]
+        [Range(1, 365, ErrorMessage = "Number of days must be between 1 and 365.")]
+        public int Days { get; set; } 
 
-    [Required]
-    public DateTime? DepartureDate { get; set; }
+        [Required(ErrorMessage = "Departure date is required.")]
+        public DateTime DepartureDate { get; set; }
+    }
 }
-
