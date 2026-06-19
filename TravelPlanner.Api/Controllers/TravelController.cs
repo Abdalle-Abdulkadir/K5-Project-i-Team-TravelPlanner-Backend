@@ -5,11 +5,13 @@ using TravelPlanner.Api.DTOs.Requests;
 using TravelPlanner.Api.DTOs.Responses;
 using TravelPlanner.Api.Models; 
 using TravelPlanner.Api.Services.TravelService;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace TravelPlanner.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("TravelPolicy")]
     public class TravelController : ControllerBase
     {
         private readonly ITravelService _travelService;
@@ -75,5 +77,7 @@ namespace TravelPlanner.Api.Controllers
 
             return Ok();
         }
+
+
     }
 }

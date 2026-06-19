@@ -3,6 +3,8 @@ using TravelPlanner.Api.DTOs.Requests;
 using TravelPlanner.Api.DTOs.Responses;
 using TravelPlanner.Api.Models;
 using TravelPlanner.Api.Services.GrokAIService;
+using Microsoft.Extensions.Caching.Memory;
+
 
 namespace TravelPlanner.Api.Services.TravelService
 {
@@ -10,15 +12,24 @@ namespace TravelPlanner.Api.Services.TravelService
     {
         private readonly AppDbContext _context;
         private readonly IGrokAIService _grokAIService;
+        private readonly IMemoryCache _cache;
 
-        public TravelService(AppDbContext context, IGrokAIService grokAIService)
+        public TravelService(AppDbContext context, IGrokAIService grokAIService, IMemoryCache cache)
         {
             _context = context;
             _grokAIService = grokAIService;
+            _cache = cache;
         }
 
+        //Returns desitination suggestions and caches identical requests for faster response
         public async Task<DestinationResponseDto> GetDestinationsAsync(DestinationRequestDto request)
         {
+            var cacheKey = $"destinations_{request.Budget}_{request.Days}_{request.DepartureDate:yyyy-MM-dd}";
+            if (_cache.TryGetValue(cacheKey, out DestinationResponseDto? cachedResponse))
+            {
+                return cachedResponse!;
+            }
+
             // Save the user's original search request
             var travelRequest = new TravelRequest
             {
@@ -34,12 +45,16 @@ namespace TravelPlanner.Api.Services.TravelService
             // Ask Grok AI for destination suggestions
             var response = await _grokAIService.GetDestinationsAsync(request);
 
-            // Send back the saved request id inside TraceId for now
+            
             response.TraceId = travelRequest.Id.ToString();
+
+            
+            _cache.Set(cacheKey, response, TimeSpan.FromMinutes(10));
 
             return response;
         }
 
+        
         public async Task<TravelPlanResponseDto> CreateTravelPlanAsync(TravelPlanRequestDto request)
         {
             // Ask Grok AI to create the full travel plan
