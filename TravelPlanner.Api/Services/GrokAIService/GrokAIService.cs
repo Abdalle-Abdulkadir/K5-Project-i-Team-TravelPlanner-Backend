@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using TravelPlanner.Api.DTOs.Requests;
 using TravelPlanner.Api.DTOs.Responses;
+using TravelPlanner.Api.Exceptions;
 
 namespace TravelPlanner.Api.Services.GrokAIService
 {
@@ -15,6 +16,8 @@ namespace TravelPlanner.Api.Services.GrokAIService
         {
             _httpClient = httpClient;
             _configuration = configuration;
+
+            _httpClient.Timeout = TimeSpan.FromMinutes(1);
         }
 
         // Creates destination suggestions based on the user's travel preferences and returns a structured response
@@ -117,13 +120,40 @@ namespace TravelPlanner.Api.Services.GrokAIService
             var json = JsonSerializer.Serialize(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"{baseUrl}{endpointPath}", content);
-            var responseText = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response;
+            string responseText;
+
+            try
+            {
+                response = await _httpClient.PostAsync($"{baseUrl}{endpointPath}", content);
+                responseText = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException)
+            {
+                throw AppException.Timeout();
+            }
+            catch (HttpRequestException)
+            {
+                throw AppException.UnexpectedError();
+            }
 
             if (!response.IsSuccessStatusCode)
             {
-                return $"Grok AI error: {responseText}";
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
+                    response.StatusCode == System.Net.HttpStatusCode.Forbidden ||
+                    response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    throw AppException.AuthenticationFailed();
+                }
+
+                if ((int)response.StatusCode == 429)
+                {
+                    throw AppException.RateLimitReached();
+                }
+
+                throw AppException.UnexpectedError();
             }
+
 
             using var document = JsonDocument.Parse(responseText);
 
