@@ -7,5 +7,8 @@ public class TravelPlanRequestDto
 {
     [Required]
     public string Destination { get; set; } = string.Empty;
+
+    [Required]
+    public int TravelRequestId { get; set; }
 }
 

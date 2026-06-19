@@ -5,12 +5,14 @@ public class TravelPlanResponseDto
 {
     public string SelectedDestination { get; set; } = string.Empty;
 
-    public decimal EstimatedCost { get; set; }
+    public decimal EstimatedCost { get; set; } 
+    public string Currency { get; set; } = "SEK";
 
-    public string TravelPlanText { get; set; } = string.Empty;
+    public List<string> TravelPlanText { get; set; } = [];
 
-    public string QualityNotes { get; set; } = string.Empty;
+    public List<string> QualityNotes { get; set; } = [];
     public string TraceId { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
+    
 }
 
