@@ -1,73 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using TravelPlanner.Api.DTOs.Requests;
+using TravelPlanner.Api.DTOs.Responses;
 using TravelPlanner.Api.Models; 
+using TravelPlanner.Api.Services.TravelService;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace TravelPlanner.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("TravelPolicy")]
     public class TravelController : ControllerBase
     {
+        private readonly ITravelService _travelService;
+
+        public TravelController(ITravelService travelService)
+        {
+            _travelService = travelService;
+        }
+
+
+        //Checks if the API is running and healthy
         [HttpGet("health")]
-        public IActionResult HealthCheck()
+        public async Task<IActionResult> HealthCheck()
         {
-            return Ok(new { status = "Healthy", timestamp = DateTime.UtcNow });
+            return Ok(new
+            {
+                status = "Healthy",
+                timestamp = DateTime.UtcNow
+            });
         }
 
+        // Returns AI-generated destination suggestions based on user budget and trip length
         [HttpPost("destinations")]
-        public ActionResult<TravelResponse> GetDestinations([FromBody] TravelRequest request)
+        public async Task<IActionResult> GetDestinations([FromBody] DestinationRequestDto request)
         {
-            if (request == null || request.Budget <= 0 || request.Days <= 0)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid budget or number of days.");
+                return BadRequest(ModelState);
             }
 
-            var response = new TravelResponse
+            if (request.DepartureDate <DateTime.Today)
             {
-                Summary = $"Here are some destinations that match your budget of {request.Budget} SEK for a {request.Days}-day trip.",
-                Destinations = new List<string> { "Barcelona, Spain", "Rome, Italy", "Prague, Czech Republic" },
-                EstimatedCost = request.Budget * 0.8m,
-                QualityNotes = "Based on current seasonal data. Prices may vary depending on airlines.",
-                TraceId = Guid.NewGuid().ToString()
-            };
+                return BadRequest("Departure date cannot be in the past.");
+            }
+
+
+            var response = await _travelService.GetDestinationsAsync(request);
 
             return Ok(response);
         }
 
-        [HttpPost("generate-plan")]
-        public ActionResult<TravelResponse> GenerateTravelPlan([FromBody] TravelRequest request)
+
+        // Generates a detailed travel plan for the destination selected by the user
+        [HttpPost("plan")]
+        public async Task<IActionResult> GenerateTravelPlan([FromBody] TravelPlanRequestDto request)
         {
-            if (string.IsNullOrEmpty(request.Destination))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Destination must be provided to generate a travel plan.");
+                return BadRequest(ModelState);
             }
 
-            var mockTravelPlan = new List<DailyPlan>();
-            for (int i = 1; i <= request.Days; i++)
-            {
-                mockTravelPlan.Add(new DailyPlan
-                {
-                    Day = i,
-                    Activities = new List<string>
-                    {
-                        $"City walk and sightseeing in {request.Destination}",
-                        "Try local cuisine at a traditional restaurant"
-                    }
-                });
-            }
 
-            var response = new TravelResponse
-            {
-                Summary = $"Your detailed travel itinerary for {request.Destination} is ready.",
-                SelectedDestination = request.Destination,
-                EstimatedCost = request.Budget,
-                TravelPlan = mockTravelPlan,
-                QualityNotes = "AI-generated plan. Please verify opening hours for local attractions.",
-                TraceId = Guid.NewGuid().ToString()
-            };
+            var response = await _travelService.CreateTravelPlanAsync(request);
 
             return Ok(response);
         }
+
+
+        // Returns all previously saved travel requests from the database
+        [HttpGet("saved")]
+        public IActionResult GetSavedTrips()
+        {
+
+            return Ok();
+        }
+
+
     }
 }
