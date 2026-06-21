@@ -1,6 +1,6 @@
 ﻿namespace TravelPlanner.Tests.ValidationTests
 {
-    public class TravelRequestTests
+    public class TravelValidationTests
     {
         [Fact]
         public void Budget_Must_Be_Greater_Than_1000_SEK()
