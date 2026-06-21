@@ -4,6 +4,8 @@ using System.Text.Json;
 using TravelPlanner.Api.DTOs.Requests;
 using TravelPlanner.Api.DTOs.Responses;
 using TravelPlanner.Api.Exceptions;
+using System.Diagnostics;
+using TravelPlanner.Api.Logging;
 
 namespace TravelPlanner.Api.Services.GrokAIService
 {
@@ -11,11 +13,13 @@ namespace TravelPlanner.Api.Services.GrokAIService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly AIRequestLogger _aiRequestLogger;
 
-        public GrokAIService(HttpClient httpClient, IConfiguration configuration)
+        public GrokAIService(HttpClient httpClient, IConfiguration configuration, AIRequestLogger aiRequestLogger)
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            _aiRequestLogger = aiRequestLogger;
 
             _httpClient.Timeout = TimeSpan.FromMinutes(1);
         }
@@ -104,6 +108,9 @@ namespace TravelPlanner.Api.Services.GrokAIService
             var baseUrl = _configuration["GrokAI:BaseUrl"];
             var endpointPath = _configuration["GrokAI:EndpointPath"];
 
+            var traceId = Guid.NewGuid().ToString();
+            var stopwatch = Stopwatch.StartNew();
+
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
 
@@ -127,18 +134,25 @@ namespace TravelPlanner.Api.Services.GrokAIService
             {
                 response = await _httpClient.PostAsync($"{baseUrl}{endpointPath}", content);
                 responseText = await response.Content.ReadAsStringAsync();
+                stopwatch.Stop();
             }
             catch (TaskCanceledException)
             {
+                stopwatch.Stop();
+                _aiRequestLogger.LogTimeout(stopwatch.ElapsedMilliseconds, traceId);
                 throw AppException.Timeout();
             }
             catch (HttpRequestException)
             {
+                stopwatch.Stop();
+                _aiRequestLogger.LogFailure(0, stopwatch.ElapsedMilliseconds, traceId);
                 throw AppException.UnexpectedError();
             }
 
             if (!response.IsSuccessStatusCode)
             {
+                _aiRequestLogger.LogFailure((int)response.StatusCode, stopwatch.ElapsedMilliseconds, traceId);
+
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
                     response.StatusCode == System.Net.HttpStatusCode.Forbidden ||
                     response.StatusCode == System.Net.HttpStatusCode.BadRequest)
@@ -154,6 +168,7 @@ namespace TravelPlanner.Api.Services.GrokAIService
                 throw AppException.UnexpectedError();
             }
 
+            _aiRequestLogger.LogSuccess((int)response.StatusCode, stopwatch.ElapsedMilliseconds, traceId);
 
             using var document = JsonDocument.Parse(responseText);
 
@@ -163,8 +178,6 @@ namespace TravelPlanner.Api.Services.GrokAIService
                 .GetProperty("content")
                 .GetString() ?? string.Empty;
         }
-
-
 
     }
 }

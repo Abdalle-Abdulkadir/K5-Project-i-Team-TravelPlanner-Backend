@@ -6,7 +6,7 @@ using TravelPlanner.Api.Services.TravelService;
 using TravelPlanner.Api.Middleware;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-
+using TravelPlanner.Api.Logging;
 
 
 
@@ -26,6 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<ITravelService, TravelService>();
 builder.Services.AddScoped<IGrokAIService, GrokAIService>();
+builder.Services.AddScoped<AIRequestLogger>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();

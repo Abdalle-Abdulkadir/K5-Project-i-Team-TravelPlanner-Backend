@@ -6,9 +6,11 @@ namespace TravelPlanner.Api.DTOs.Requests;
 public class TravelPlanRequestDto
 {
     [Required]
+    [MinLength(2)]
     public string Destination { get; set; } = string.Empty;
 
     [Required]
-    public int TravelRequestId { get; set; }
+    
+    public int TravelRequestId { get; set; } 
 }
 
