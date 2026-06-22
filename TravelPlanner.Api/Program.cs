@@ -16,6 +16,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Configure CORS to allow requests from the frontend application
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins("http://127.0.0.1:5500")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 //Add OpenAPI support for Scalar
 builder.Services.AddOpenApi();
 
@@ -65,6 +76,8 @@ var app = builder.Build();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseRateLimiter();
+
+app.UseCors("FrontendPolicy");
 
 // Enable Scalar only in development
 if (app.Environment.IsDevelopment())
