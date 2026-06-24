@@ -1,0 +1,33 @@
+name: Backend CD Pipeline
+
+on:
+  push:
+    branches: [dev, main]
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: az acr login --name travelplannerapi
+
+      - name: Build Docker image
+        run: |
+          docker build -t travelplannerapi:latest .
+
+      - name: Tag Docker image
+        run: |
+          docker tag travelplannerapi:latest travelplannerapi.azurecr.io/travelplanner-api:latest
+
+      - name: Push Docker image
+        run: |
+          docker push travelplannerapi.azurecr.io/travelplanner-api:latest

@@ -7,11 +7,18 @@ using TravelPlanner.Api.Middleware;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using TravelPlanner.Api.Logging;
+using Azure.Identity;
 
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Azure Key Vault configuration provider
+builder.Configuration.AddAzureKeyVault(
+    new Uri("https://travelplanner-kv.vault.azure.net/"),
+    new DefaultAzureCredential());
+
 
 // Add services to the container.
 builder.Services.AddControllers();
