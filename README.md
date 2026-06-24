@@ -15,7 +15,7 @@ The project follows modern cloud development practices including Docker, CI/CD, 
 
 ---
 
-# 🛠 Technologies
+## 🛠 Technologies
 
 ### Backend
 
@@ -38,159 +38,29 @@ The project follows modern cloud development practices including Docker, CI/CD, 
 ### Testing
 
 - xUnit
-- ASP.NET Core Testing
 
 ---
 
-# 📂 Project Structure
+## 📂 Project Structure
 
-## Controllers
+The project follows a clean and simple structure:
 
-### TravelController
+- `Controllers/` → Handles HTTP requests and API endpoints.
+- `Services/TravelService/` → Handles business logic, caching, and travel request processing.
+- `Services/GrokAIService/` → Handles communication with Grok AI and AI-generated travel plans.
+- `Models/` → Domain entities used to store travel requests and travel responses.
+- `DTOs/Requests/` → Receives and validates incoming client data.
+- `DTOs/Responses/` → Returns structured data back to the client.
+- `Data/` → Database context and Entity Framework configuration.
+- `Middleware/` → Provides centralized exception handling.
+- `Exceptions/` → Contains custom application exceptions.
+- `Logging/` → Logs AI requests, failures, response times, and trace IDs.
+- `TravelPlanner.Tests/` → Automated unit and validation tests.
+- `.github/workflows/ci.yml` → Runs automated tests and build checks.
+- `.github/workflows/cd.yml` → Handles Docker build, Azure login, ACR push, and Azure deployment.
+.- `Evaluation.md` → Documents project reflections, challenges, lessons learned, and future improvements.
+- `Screenshots/` → Validation and application demonstration screenshots.
 
-Handles incoming API requests for:
-
-- Destination suggestions
-- Travel plan generation
-
----
-
-## Services
-
-### TravelService
-
-Business logic layer responsible for:
-
-- Request handling
-- Caching
-- Database operations
-- Communication with AI services
-
-### GrokAIService
-
-Handles communication with Grok AI.
-
-Responsibilities:
-
-- AI prompt generation
-- API communication
-- Response parsing
-- Error handling
-- Logging
-
----
-
-## Models
-
-### TravelRequest
-
-Stores:
-
-- Budget
-- Travel days
-- Departure date
-- Departure location
-
-### TravelResponse
-
-Stores:
-
-- Selected destination
-- Estimated cost
-- Travel plan
-- Quality notes
-- Summary
-- Trace ID
-
----
-
-## DTOs
-
-### Requests
-
-Used to receive client input.
-
-Examples:
-
-- DestinationRequestDto
-- TravelPlanRequestDto
-
-### Responses
-
-Used to return API responses.
-
-Examples:
-
-- DestinationResponseDto
-- TravelPlanResponseDto
-
----
-
-## Middleware
-
-### GlobalExceptionMiddleware
-
-Centralized exception handling.
-
-Provides:
-
-- Consistent error responses
-- Custom status codes
-- Cleaner controller logic
-
----
-
-## Exceptions
-
-### AppException
-
-Custom exception system for:
-
-- Authentication failures
-- Rate limits
-- Timeouts
-- Unexpected errors
-
----
-
-## Logging
-
-### AIRequestLogger
-
-Tracks:
-
-- Response times
-- Success responses
-- Failed requests
-- Trace IDs
-
----
-
-## Tests
-
-### ControllerTests
-
-Verifies controller behavior.
-
-### ServiceTests
-
-Verifies TravelService functionality.
-
-### GrokAIServiceTests
-
-Verifies:
-
-- AI response parsing
-- Authentication failures
-- Error handling
-
-### ValidationTests
-
-Verifies:
-
-- Budget validation
-- Travel days validation
-- Departure date validation
 
 ---
 
@@ -245,51 +115,58 @@ Expected response:
 
 ---
 
-# ⚙️ CI/CD Pipeline
+## ⚙️ CI/CD pipeline
 
-## CI Workflow
+The project uses GitHub Actions to automate testing, containerization, and cloud deployment. Both pipelines run automatically on pull requests and updates to the `dev` and `main` branches.
 
-Responsible for:
+### CI (Continuous Integration)
 
-✅ Restore dependencies
+Ensures that new code is validated before being merged.
 
-✅ Build application
+- `Pull Request Validation` → Runs automatically on pull requests targeting `dev` and `main`.
+- `Restore` → Restores all project dependencies and NuGet packages.
+- `Build` → Compiles the solution to verify that the application builds successfully.
+- `Test` → Runs automated tests to verify application functionality.
 
-✅ Execute automated tests
+### CD (Continuous Deployment)
 
-✅ Verify code quality
+Automates the deployment process to Azure.
 
-Runs automatically on Pull Requests.
-
----
-
-## CD Workflow
-
-Responsible for:
-
-✅ Azure authentication
-
-✅ Docker image build
-
-✅ Push image to Azure Container Registry
-
-✅ Deploy latest image to Azure Container Apps
-
-Runs after deployment approval workflow.
+- `Pull Request & Branch Trigger` → Runs on updates and pull requests for `dev` and `main`.
+- `Azure Login` → Authenticates GitHub Actions with Azure.
+- `ACR Login` → Connects to Azure Container Registry.
+- `Docker Build` → Builds a Docker image of the application.
+- `Docker Push` → Pushes the image to Azure Container Registry.
+- `Azure Deployment` → Deploys the latest container image to Azure Container Apps.
 
 ---
 
-# 🔐 GitHub Secrets
+## 🌿 Git Workflow
 
-The following GitHub Secrets are used:
-
-- AZURE_CREDENTIALS
-
-Secrets are never stored in source control.
+- `main` → Protected production branch.
+- `dev` → Protected default development branch.
+- `Feature Branches` → Created from `dev` for all development work.
+- `Pull Requests` → Required before merging changes into `dev`.
+- `Code Review` → Changes are reviewed before being merged.
+- `Final Release` → Completed work is merged from `dev` into `main`.
 
 ---
 
-# 📦 Azure Container Registry (ACR)
+## 🔐 GitHub Secrets
+
+- `AZURE_CREDENTIALS` → Stores Azure login credentials for the CD pipeline.
+
+Used for:
+
+- Azure authentication
+- ACR access
+- Automated deployment
+
+No credentials are stored in source code.
+
+---
+
+## 📦 Azure Container Registry (ACR)
 
 ACR is used to:
 
@@ -311,7 +188,7 @@ Container App Pulls Image
 
 ---
 
-# ☁️ Azure Deployment
+## ☁️ Azure Deployment
 
 The application is deployed to Azure using:
 
@@ -324,7 +201,7 @@ This provides a production-like cloud environment.
 
 ---
 
-# 📦 Azure Container Apps
+## 📦 Azure Container Apps
 
 Azure Container Apps hosts the API.
 
@@ -337,25 +214,20 @@ Benefits:
 
 ---
 
-# 🔑 Azure Key Vault
+## 🔑 Azure Key Vault
 
-Azure Key Vault stores sensitive configuration values.
-
-Examples:
-
-- API Keys
-- Connection strings
-- Secrets
+- `Grok API Key` → Stored securely in Azure Key Vault.
 
 Benefits:
 
-- Secure storage
+- Secure secret storage
+- No secrets stored in source code
 - Centralized secret management
-- No secrets inside source code
+
 
 ---
 
-# 🛡 Managed Identity and RBAC
+## 🛡 Managed Identity and RBAC
 
 Managed Identity allows Azure services to authenticate securely without storing credentials.
 
@@ -372,19 +244,17 @@ Benefits:
 
 ---
 
-# ✅ Verification Endpoint
+## ✅ API Endpoints
 
-The application includes endpoints used to verify:
+- `GET /health` → Verifies that the API is running and responding correctly.
+- `GET /travel/save` → Reserved for future database persistence functionality.
+- `POST /travel/destinations` → Returns destination suggestions based on budget, travel days, and departure date.
+- `POST /travel/plan` → Generates a complete AI-powered travel plan for the selected destination.
 
-- API functionality
-- AI integration
-- Deployment health
-
-These endpoints help validate successful deployments.
 
 ---
 
-# 📊 Monitoring and Logging
+## 📊 Monitoring and Logging
 
 Monitoring is implemented through:
 
@@ -407,7 +277,7 @@ Used to:
 
 ---
 
-# 📝 Evaluation.md
+## 📝 Evaluation.md
 
 The project includes an Evaluation.md document.
 
@@ -421,55 +291,44 @@ Contents:
 
 ---
 
-# ▶️ How to Run the Project
+## ▶️ How to Run the Project
 
-## Clone Repository
-
-```bash
-git clone <repository-url>
-```
-
----
-
-## Restore Dependencies
+### Clone Repository
 
 ```bash
-dotnet restore
+git clone https://github.com/Abdalle-Abdulkadir/K5-Project-i-Team-TravelPlanner-Backend.git
 ```
 
----
-
-## Run API
+### Restore Dependencies
 
 ```bash
-dotnet run
+dotnet restore TravelPlanner.Api.slnx
 ```
 
----
-
-## Run Tests
+### Run Automated Tests
 
 ```bash
-dotnet test
+dotnet test TravelPlanner.Tests
 ```
 
----
-
-## Build Docker Image
+### Run the API
 
 ```bash
-docker build -t travelplanner .
+dotnet run --project TravelPlanner.Api
 ```
 
----
-
-## Run Docker Container
+### Build Docker Image
 
 ```bash
-docker run -p 8080:8080 travelplanner
+docker build -t travelplanner-api ./TravelPlanner.Api
 ```
 
----
+### Run Docker Container
+
+```bash
+docker run -p 8080:8080 travelplanner-api
+```
+
 
 ## 🧪 Automated Tests
 
@@ -498,7 +357,7 @@ All tests run automatically in the GitHub Actions CI pipeline.
 
 ---
 
-# ⭐ Key Features
+## ⭐ Key Features
 
 - AI-powered destination recommendations
 - AI-generated travel plans
@@ -515,26 +374,24 @@ All tests run automatically in the GitHub Actions CI pipeline.
 
 ---
 
-# 📸 Screenshots
+## 📸 Screenshots
 
-The project contains a Screenshots folder showing:
+The project contains screenshots demonstrating error handling.
 
-- Validation errors
-- User input validation
-- Application behavior
-- Test results
+- `Invalid API Key` → Authentication failure.
+- `Rate Limiting` → API rate limit handling.
+- `Timeout Test` → Request timeout handling.
+- `Wrong Endpoint Path` → Invalid endpoint handling.
+
 
 ---
 
-# 👨‍💻 Author
+## 👨‍💻 Author
 
 ### Abdalle Abdulkadir
 ### Sepideh ShoghiRabani
 
-K5 Project in Team
 
-Chas Academy
 
-Cloud, DevOps & AI Integration
 
 
