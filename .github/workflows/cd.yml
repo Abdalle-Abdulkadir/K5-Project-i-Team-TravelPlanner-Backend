@@ -33,3 +33,11 @@ jobs:
       - name: Push Docker image
         run: |
           docker push travelplannerapi.azurecr.io/travelplanner-api:latest
+
+      - name: Deploy to Azure Container App
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: travelplanner-api
+          resourceGroup: travelplanner-rg
+          imageToDeploy: travelplannerapi.azurecr.io/travelplanner-api:latest
+
