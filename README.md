@@ -25,6 +25,14 @@ The project follows modern cloud development practices including Docker, CI/CD, 
 - SQL Server
 - Grok AI API
 
+### 🗄️ Database Implementation
+
+- SQL Server was used as the database
+- Database First approach was used
+- Save operations are currently commented out
+- Test data is not stored during development
+- Can be fully enabled and extended in future versions
+
 ### Cloud & DevOps
 
 - Docker
@@ -277,17 +285,16 @@ Used to:
 
 ---
 
-## 📝 Evaluation.md
+## 📄 Evaluation.md
 
-The project includes an Evaluation.md document.
+The project includes a separate evaluation document covering:
 
-Contents:
-
-- Project reflection
-- Technical decisions
-- Challenges encountered
-- Lessons learned
-- Future improvements
+- 🤖 AI Quality – Response accuracy
+- ⚠️ Limitations and Risks – Known challenges
+- 🛡️ Mitigations – Error handling
+- 🔐 Security – Secret protection
+- 🔄 Fullstack Flow – System communication
+- ✅ Conclusion – Final reflection
 
 ---
 
