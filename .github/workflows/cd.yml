@@ -3,6 +3,8 @@ name: Backend CD Pipeline
 on:
   push:
     branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
 
 jobs:
   cd:
@@ -22,7 +24,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t travelplannerapi:latest .
+          docker build -t travelplannerapi:latest ./TravelPlanner.Api
 
       - name: Tag Docker image
         run: |
